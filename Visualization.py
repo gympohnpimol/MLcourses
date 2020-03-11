@@ -12,9 +12,18 @@ sns.set()
 df = pd.read_csv("ml_telecom_churn.csv")
 # print(df.head())
 plt.style.use('ggplot')
-features = ["total day minutes"]
-# print(df["total day minutes"].unique())
-plt.hist(df[features].T);
-plt.show()
+features = ["total intl calls"]
 
-# , "total intl calls"
+###histogram plots###
+# df[features].hist(figsize=(10,5)) 
+# print(df["total day minutes"].unique())
+# plt.hist(df[features].T); 
+
+###density plots###
+# df[features].plot(kind="density", subplots=True, layout=(1,2), sharex=False, figsize=(10,4));
+
+###Seaborn's distplot kernel density estimate (KDE)###
+sns.distplot(df["total intl calls"])
+
+
+plt.show()
