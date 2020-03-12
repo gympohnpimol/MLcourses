@@ -18,7 +18,7 @@ Q2 = df[df["sex"]=="Female"]['age'].mean()
 
 #Q3
 Q3 = df[df["native-country"]=="Germany"]
-# print(Q3.count())
+print(Q3.count())
 
 Q4 = df[df["salary"]==">50K"].describe()
 # print(Q4)
@@ -41,5 +41,5 @@ Q9 = df["hours-per-week"].max()
 num_workaholics = df[df['hours-per-week'] == Q9].shape[0]
 # print(num_workaholics)
 
-for (country, salary), sub_df in df.groupby(['native-country', 'salary']):
-    print(country, salary, round(sub_df['hours-per-week'].mean(), 2))
+# for (country, salary), sub_df in df.groupby(['native-country', 'salary']):
+#     print(country, salary, round(sub_df['hours-per-week'].mean(), 2))
