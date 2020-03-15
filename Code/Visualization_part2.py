@@ -7,7 +7,10 @@ import seaborn as sns
 import warnings 
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler
-
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+import plotly
+import plotly.graph_objs as go
+init_notebook_mode(connected = True)
 
 plt.rcParams["figure.figsize"] = 8, 5
 plt.rcParams["image.cmap"]= "viridis"
@@ -38,10 +41,11 @@ df["Critic_Count"] = df["Critic_Count"].astype("int64")
 # sns.boxplot(y="Platform", x="Critic_Score", data=df[df["Platform"].isin(top_platforms)], orient= "h")
 
 """heatmap"""
-platform_genre_sales = df.pivot_table( 
-                        index="Platform",
-                        columns="Genre",
-                        values="Global_Sales",
-                        aggfunc= sum).fillna(0).applymap(float)
-sns.heatmap(platform_genre_sales, annot=True, fmt=".1f", linewidths=.5)
+# platform_genre_sales = df.pivot_table( 
+#                         index="Platform",
+#                         columns="Genre",
+#                         values="Global_Sales",
+#                         aggfunc= sum).fillna(0).applymap(float)
+# sns.heatmap(platform_genre_sales, annot=True, fmt=".1f", linewidths=.5)
+
 plt.show()
