@@ -48,4 +48,39 @@ df["Critic_Count"] = df["Critic_Count"].astype("int64")
 #                         aggfunc= sum).fillna(0).applymap(float)
 # sns.heatmap(platform_genre_sales, annot=True, fmt=".1f", linewidths=.5)
 
+platforms_df = df.groupby('Platform')[['Global_Sales']].sum().join(
+    df.groupby('Platform')[['Name']].count()
+)
+platforms_df.columns = ['Global_Sales', 'Number_of_Games']
+platforms_df.sort_values('Global_Sales', ascending=False, inplace=True)
+# Create a bar for the global sales
+trace0 = go.Bar(
+    x=platforms_df.index,
+    y=platforms_df['Global_Sales'],
+    name='Global Sales'
+)
+
+# Create a bar for the number of games released
+trace1 = go.Bar(
+    x=platforms_df.index,
+    y=platforms_df['Number_of_Games'],
+    name='Number of games released'
+)
+
+# Get together the data and style objects
+data = [trace0, trace1]
+layout = {'title': 'Market share by gaming platform'}
+
+# Create a `Figure` and plot it
+fig = go.Figure(data=data, layout=layout)
+iplot(fig, show_link=False)
+
+data = []
+
+# Create a box trace for each genre in our dataset
+for genre in df.Genre.unique():
+    data.append(
+        go.Box(y=df[df.Genre == genre].Critic_Score, name=genre)
+    )
+
 plt.show()
