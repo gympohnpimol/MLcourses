@@ -12,7 +12,7 @@ from sklearn import metrics
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.preprocessing import StandardScaler
 
-df = pd.read_csv("~/Desktop/Practice/Live.csv")
+df = pd.read_csv("~/Desktop/Practice/Facebook_Live_sellers_in_Thailand/Live.csv")
 df_clean1 = df.apply(lambda x: sum(x.isnull()))
 df = df.drop(["Column1","Column2", "Column3", "Column4", "status_id"], axis=1)
 df["status_published"] = pd.to_datetime(df["status_published"])
