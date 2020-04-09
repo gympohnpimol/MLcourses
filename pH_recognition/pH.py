@@ -11,7 +11,8 @@ from sklearn import tree
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.cm as cm
 from sklearn import metrics
-df = pd.read_csv("~/Desktop/Practice/pH/ph_data.csv")
+
+df = pd.read_csv("~/Desktop/Practice/pH_recognition/ph_data.csv")
 df_clean = df.apply(lambda x: sum(x.isnull()))
 
 plt.figure(figsize=(5,5))
