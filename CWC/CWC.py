@@ -42,8 +42,7 @@ fixtures.insert(1, "first_position", fixtures["Team_1"].map(ranking.set_index('T
 fixtures.insert(2, "second_position", fixtures["Team_2"].map(ranking.set_index('Team')['Position']))
 
 fixtures = fixtures.iloc[:45,:]
-fixtures.tail()
-
+fixtures = fixtures.tail()
 for index, row in fixtures.iterrows():
     if row["first_position"] < row["second_position"]:
         pred_set.append({"Team_1": row["Team_1"], "Team_2": row["Team_2"], "winning_team": None})
@@ -52,7 +51,8 @@ for index, row in fixtures.iterrows():
 
 pred_set = pd.DataFrame(pred_set)
 backup_pred_set = pred_set
-
+print(pred_set.head())
+# Get dummy variables and drop winning_team column
 pred_set = pd.get_dummies(pred_set, prefix = ["Team_1", "Team_2"],columns = ["Team_1", "Team_2"])
 missing_cols = set(final.columns) -  set(pred_set.columns)
 for c in missing_cols:
@@ -60,12 +60,12 @@ for c in missing_cols:
 pred_set = pred_set[final.columns]
 # pred_set = pred_set.drop(["Winner"], axis=1)
 pred_set = pred_set.drop(["winning_team"], axis =1)
-# print(pred_set)
+
 
 predictions = model.predict(pred_set)
 for i in range(fixtures.shape[0]):
     print(backup_pred_set.iloc[i, 1] + "and"+ backup_pred_set.iloc[i, 0])
-    if predictions == 1:
+    if predictions[i] == 1:
         print("Winner: " + backup_pred_set.iloc[i, 1])
     else:
         print("Winner: " + backup_pred_set.iloc[i, 0])
