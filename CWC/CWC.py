@@ -2,6 +2,8 @@
 import pandas as pd 
 import numpy as np 
 import os 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
 
 world_cup = pd.read_csv('~/Desktop/Practice/CWC/World_Cup_2019_Dataset.csv')
 results = pd.read_csv('~/Desktop/Practice/CWC/results.csv')
@@ -22,5 +24,49 @@ final = pd.get_dummies(team2010, prefix=["Team_1", "Team_2"], columns=["Team_1",
 
 #Separate X and y sets
 X = final.drop(["Winner"], axis = 1)
-y = final.Winner
-print(y)
+y = final["Winner"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+X_train = X_train.fillna(0)
+X_test = X_test.fillna(0)
+model = LogisticRegression()
+model.fit(X_train, y_train)
+train_score = model.score(X_train, y_train)
+test_score = model.score(X_test, y_test)
+# print(test_score)
+
+ranking = pd.read_csv('~/Desktop/Practice/CWC/icc_rankings.csv')
+fixtures = pd.read_csv('~/Desktop/Practice/CWC/fixtures.csv')
+pred_set = []
+
+fixtures.insert(1, "first_position", fixtures["Team_1"].map(ranking.set_index('Team')['Position']))
+fixtures.insert(2, "second_position", fixtures["Team_2"].map(ranking.set_index('Team')['Position']))
+
+fixtures = fixtures.iloc[:45,:]
+fixtures.tail()
+
+for index, row in fixtures.iterrows():
+    if row["first_position"] < row["second_position"]:
+        pred_set.append({"Team_1": row["Team_1"], "Team_2": row["Team_2"], "winning_team": None})
+    else:
+        pred_set.append({"Team_1": row["Team_1"], "Team_2": row["Team_2"], "winning_team": None})
+
+pred_set = pd.DataFrame(pred_set)
+backup_pred_set = pred_set
+
+pred_set = pd.get_dummies(pred_set, prefix = ["Team_1", "Team_2"],columns = ["Team_1", "Team_2"])
+missing_cols = set(final.columns) -  set(pred_set.columns)
+for c in missing_cols:
+    pred_set[c] = 0
+pred_set = pred_set[final.columns]
+# pred_set = pred_set.drop(["Winner"], axis=1)
+pred_set = pred_set.drop(["winning_team"], axis =1)
+# print(pred_set)
+
+predictions = model.predict(pred_set)
+for i in range(fixtures.shape[0]):
+    print(backup_pred_set.iloc[i, 1] + "and"+ backup_pred_set.iloc[i, 0])
+    if predictions == 1:
+        print("Winner: " + backup_pred_set.iloc[i, 1])
+    else:
+        print("Winner: " + backup_pred_set.iloc[i, 0])
+    print("")
