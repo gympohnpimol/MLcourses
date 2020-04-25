@@ -64,9 +64,54 @@ pred_set = pred_set.drop(["winning_team"], axis =1)
 
 predictions = model.predict(pred_set)
 for i in range(fixtures.shape[0]):
-    print(backup_pred_set.iloc[i, 1] + "and"+ backup_pred_set.iloc[i, 0])
+    print(backup_pred_set.iloc[i, 1] + "  and  "+ backup_pred_set.iloc[i, 0])
     if predictions[i] == 1:
         print("Winner: " + backup_pred_set.iloc[i, 1])
     else:
         print("Winner: " + backup_pred_set.iloc[i, 0])
     print("")
+
+semi = [("New Zealand", "India"),
+        ("England", "Australia")]
+final = [("India", "England")]
+def semifinal(match, ranking, final, model):
+    positions = []
+
+    for m in match:
+        positions.append(ranking.loc[ranking["Team"] == match[0], "Position"].iloc[0])
+        positions.append(ranking.loc[ranking["Team"] == match[1], "Position"].iloc[0])
+    
+    pred_set = []
+    i = 0
+    j = 0
+    while i < len(positions):
+        dict1 = {}
+
+        if positions[i] < positions[i+1]:
+            dict1.update({"Team1": match[j][0], "Team2": match[j][1]})
+        else:
+            dict1.update({"Team1": match[j][1], "Team2": match[j][0]})
+    
+    pred_set = pd.DataFrame(pred_set)
+    backup_pred_set = pred_set
+
+    pred_set = pd.get_dummies(pred_set, prefix=["Team1", "Team2"], columns=["Team1", "Team2"])
+
+    missing_cols2 = set(final.columns) - set(pred_set.columns)
+    for c in missing_cols2:
+        pred_set[c] = 0
+    pred_set = pred_set[final.columns]
+    pred_set = pred_set.drop(["Winner"], axis=1)
+
+    predictions = model.predict(pred_set)
+    for i in range(len(pred_set)):
+        print(backup_pred_set.iloc[i,1] + "  and  " + backup_pred_set.iloc[i,0])
+        if predictions[i] == 1:
+            print("Winner: " + backup_pred_set.iloc[i,1])
+        else:
+            print("Winner: " + backup_pred_set.iloc[i,0])
+        print("")
+
+    return semifinal(semi, ranking, final, model)
+    return semifinal(final, ranking, final, model)
+# final = [("India", "England")]
