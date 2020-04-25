@@ -51,7 +51,7 @@ for index, row in fixtures.iterrows():
 
 pred_set = pd.DataFrame(pred_set)
 backup_pred_set = pred_set
-print(pred_set.head())
+
 # Get dummy variables and drop winning_team column
 pred_set = pd.get_dummies(pred_set, prefix = ["Team_1", "Team_2"],columns = ["Team_1", "Team_2"])
 missing_cols = set(final.columns) -  set(pred_set.columns)
@@ -64,7 +64,7 @@ pred_set = pred_set.drop(["winning_team"], axis =1)
 
 predictions = model.predict(pred_set)
 for i in range(fixtures.shape[0]):
-    print(backup_pred_set.iloc[i, 1] + "  and  "+ backup_pred_set.iloc[i, 0])
+    print(backup_pred_set.iloc[i, 1] + "  VS  "+ backup_pred_set.iloc[i, 0])
     if predictions[i] == 1:
         print("Winner: " + backup_pred_set.iloc[i, 1])
     else:
@@ -73,8 +73,9 @@ for i in range(fixtures.shape[0]):
 
 semi = [("New Zealand", "India"),
         ("England", "Australia")]
-final = [("India", "England")]
-def semifinal(match, ranking, final, model):
+finals = [("India", "England")]
+
+def winner(match, ranking, final, model):
     positions = []
 
     for m in match:
@@ -88,14 +89,18 @@ def semifinal(match, ranking, final, model):
         dict1 = {}
 
         if positions[i] < positions[i+1]:
-            dict1.update({"Team1": match[j][0], "Team2": match[j][1]})
+            dict1.update({"Team_1": match[j][0], "Team_2": match[j][1]})
         else:
-            dict1.update({"Team1": match[j][1], "Team2": match[j][0]})
+            dict1.update({"Team_1": match[j][1], "Team_2": match[j][0]})
+
+        pred_set.append(dict1)
+        i += 2
+        j += 1
     
     pred_set = pd.DataFrame(pred_set)
     backup_pred_set = pred_set
 
-    pred_set = pd.get_dummies(pred_set, prefix=["Team1", "Team2"], columns=["Team1", "Team2"])
+    pred_set = pd.get_dummies(pred_set, prefix=["Team_1", "Team_2"], columns=["Team_1", "Team_2"])
 
     missing_cols2 = set(final.columns) - set(pred_set.columns)
     for c in missing_cols2:
@@ -105,13 +110,13 @@ def semifinal(match, ranking, final, model):
 
     predictions = model.predict(pred_set)
     for i in range(len(pred_set)):
-        print(backup_pred_set.iloc[i,1] + "  and  " + backup_pred_set.iloc[i,0])
+        print(backup_pred_set.iloc[i,1] + "  VS  " + backup_pred_set.iloc[i,0])
         if predictions[i] == 1:
             print("Winner: " + backup_pred_set.iloc[i,1])
         else:
             print("Winner: " + backup_pred_set.iloc[i,0])
         print("")
 
-    return semifinal(semi, ranking, final, model)
-    return semifinal(final, ranking, final, model)
+    # return winner(semi, ranking, final, model)
+    return winner(finals, ranking, final, model)
 # final = [("India", "England")]
